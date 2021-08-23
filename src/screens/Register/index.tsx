@@ -10,6 +10,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { useForm } from 'react-hook-form';
 
+import { CommonActions, useNavigation } from '@react-navigation/native'
+
+import uuid from 'react-native-uuid';
+
 import { Button } from '../../components/Forms/Button';
 
 import { InputForm } from '../../components/Forms/InputForm';
@@ -53,16 +57,20 @@ export function Register (){
     name: 'Categoria'
   });
 
+  const navigation = useNavigation();
+  
+  
   const { 
     control,
     handleSubmit,
+    reset,
     formState: { errors }
 
   } = useForm({
     resolver: yupResolver(schema)
   });
 
-  function handleTransactionsTypeSelect(type: 'up' | 'down'){
+  function handleTransactionsTypeSelect(type: 'positive' | 'negative'){
     setTransactionType(type);
   }
 
@@ -82,31 +90,59 @@ async  function handleRegister(form: FormData){
     if(category.key === 'category')
     return Alert.alert('Selecione uma categoria');
 
-    const data = {
+    const newTransaction = {
+      id: String(uuid.v4()),
       name: form.name,
       amount: form.amount,
-      transactionType,
-      category: category.key
+      type: transactionType,
+      category: category.key,
+      date: new Date()
      }
-     console.log(data);
+     
     try {
-      
-      await AsyncStorage.setItem(dataKey, JSON.stringify(data));
+      const data = await AsyncStorage.getItem(dataKey);
+      const currentData = data ? JSON.parse(data) : [];
 
+      const dataFormatted = [
+        ...currentData,
+        newTransaction
+      ]
+
+      await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted));
+
+      reset();
+      setTransactionType('');
+      setCategory({
+        key: 'category',
+        name: 'Categoria'
+      });
+
+      // navigation.navigate({key: 'Listagem'});
+
+      navigation.dispatch(
+        CommonActions.navigate({
+          name: 'Listagem',
+        })
+      );
+            
     } catch (error) {
       console.log(error);
       Alert.alert('Não foi possível Salvar');
     }
   }
+  
+    //  useEffect(()=>{
+    //   async function loadData(){
+    //     const data = await AsyncStorage.getItem(dataKey);
+    //     console.log(JSON.parse(data!)); 
+    //   }
 
-    useEffect(()=>{
-      async function loadData(){
-        const data = await AsyncStorage.getItem(dataKey);
-        console.log(data);
-      }
-
-      loadData();
-    },[]);
+    //   loadData();
+    //   async function removeAll(){
+    //   await AsyncStorage.removeItem(dataKey);
+    //   }
+    //   removeAll();
+    // },[]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -138,16 +174,16 @@ async  function handleRegister(form: FormData){
                 <TransactionTypeButton
                 type='up'
                 title='Income'
-                onPress={ () => handleTransactionsTypeSelect('up')}
-                isActive= {transactionType === 'up'}
+                onPress={ () => handleTransactionsTypeSelect('positive')}
+                isActive= {transactionType === 'positive'}
                 />
                 
 
                 <TransactionTypeButton
                 type='down'
                 title='Outcome'
-                onPress={ () => handleTransactionsTypeSelect('down')}
-                isActive= {transactionType === 'down'}
+                onPress={ () => handleTransactionsTypeSelect('negative')}
+                isActive= {transactionType === 'negative'}
                 />
               </TransactionsTypes>
 
