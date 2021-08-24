@@ -8,6 +8,10 @@ import React from 'react';
 import { ThemeProvider } from 'styled-components';
 import AppLoading from 'expo-app-loading';
 
+import { SignIn } from './src/screens/Signin';
+
+import { AuthContext } from './src/AuthContext';
+
 
 
 import {
@@ -34,7 +38,10 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <NavigationContainer>
-        <AppRoutes/>
+        <AuthContext.Provider value={[]}>
+          <SignIn/>
+        {/* <AppRoutes/> */}
+        </AuthContext.Provider>
       </NavigationContainer>
     </ThemeProvider>
   );
