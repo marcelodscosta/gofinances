@@ -10,7 +10,7 @@ import AppLoading from 'expo-app-loading';
 
 import { SignIn } from './src/screens/Signin';
 
-import { AuthContext } from './src/AuthContext';
+import { AuthProvider } from './src/hooks/auth';
 
 
 
@@ -38,10 +38,10 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <NavigationContainer>
-        <AuthContext.Provider value={[]}>
+        <AuthProvider>
           <SignIn/>
         {/* <AppRoutes/> */}
-        </AuthContext.Provider>
+        </AuthProvider>
       </NavigationContainer>
     </ThemeProvider>
   );
