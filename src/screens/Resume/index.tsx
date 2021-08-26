@@ -14,6 +14,7 @@ import {
 } from './styles';
 import { categories } from "../../utils/categories";
 import { View } from "react-native";
+import { useAuth } from "../../hooks/auth";
 
 interface TransactionData {
   type: 'positive' | 'negative';
@@ -32,11 +33,11 @@ interface CategoryData {
 }
 
 export function Resume(){
-
+  const { user } = useAuth();
   const [totalByCategories, setTotalByCategories] = useState<CategoryData[]>([]);
 
   async function loadData(){
-    const dataKey = '@golfinance: transactions';
+    const dataKey = `@golfinance: transactions_user:${user.id}`;
     const response = await AsyncStorage.getItem(dataKey);
     const responseFormatted = response ? JSON.parse(response) : [];
     

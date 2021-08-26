@@ -32,13 +32,14 @@ import {
   Fields,
   TransactionsTypes,
 } from './styles';
-
+import { useAuth } from '../../hooks/auth';
+const { user } = useAuth();
 interface FormData {
   name: string;
   amount: string;
 }
 
-const dataKey = '@golfinance: transactions';
+const dataKey = `@golfinance: transactions_user:${user.id}`;
 
 const schema = Yup.object().shape({
   name: Yup.string().required('Nome é obrigatório'),
@@ -51,6 +52,7 @@ export function Register (){
   const [transactionType, setTransactionType] = useState('');
   const[categoryModalOpen, setCategoryModalOpen] = useState(false);
 
+  
 
   const [category, setCategory] = useState({
     key: 'category',

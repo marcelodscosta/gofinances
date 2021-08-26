@@ -2,7 +2,8 @@ import 'react-native-gesture-handler';
 import 'intl';
 import 'intl/locale-data/jsonp/pt-BR';
 
-import { NavigationContainer } from '@react-navigation/native';
+// import { NavigationContainer } from '@react-navigation/native';
+import { Routes } from './src/routes';
 
 import React from 'react';
 import { ThemeProvider } from 'styled-components';
@@ -10,7 +11,7 @@ import AppLoading from 'expo-app-loading';
 
 import { SignIn } from './src/screens/Signin';
 
-import { AuthProvider } from './src/hooks/auth';
+import { AuthProvider, useAuth } from './src/hooks/auth';
 
 
 
@@ -32,17 +33,20 @@ export default function App() {
     Poppins_500Medium,
     Poppins_700Bold
   });
-  if(!fontLoaded){
+
+  const { userStorageLoading } = useAuth();
+
+  if(!fontLoaded || userStorageLoading){
     return <AppLoading />
   }
   return (
     <ThemeProvider theme={theme}>
-      <NavigationContainer>
+        
         <AuthProvider>
-          <SignIn/>
+          <Routes/>
         {/* <AppRoutes/> */}
         </AuthProvider>
-      </NavigationContainer>
+      
     </ThemeProvider>
   );
 }
